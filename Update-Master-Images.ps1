@@ -2,7 +2,7 @@
 # in place that you cannot download anything while in a remote session.  So for each new Master Image be sure to create this which can be done 
 # once then export it to a file share and run this command so it's the same in each VM.
 #
-# schtasks /create /xml "\\192.168.1.95\share\Scripts\Download Windows Updates.xml" /tn "Windows Download and Install Updates" /ru "Administrator" /rp "yourpassword"
+# schtasks /create /xml "\\fileserver\share\Scripts\Download Windows Updates.xml" /tn "Windows Download and Install Updates" /ru "Administrator" /rp "yourpassword"
 # 
 # For Windows 10 make sure Windows Remote Management is running as a service, set start automatically in each Master Image VM.
 #
