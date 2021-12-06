@@ -6,8 +6,8 @@
 # $credentials = Get-Credential
 # $credentials | Export-Clixml -path <driveletter>:\<path>\<filename>.cred
 $credentials = import-clixml -path <driveletter>:\<path>\<filename>.cred
-$vc = "jw-vcenter.iamware.net"
-$cluster = "vSAN-Cluster"
+$vc = "vcenter.fdqn.whatever"
+$cluster = "vSAN-Cluster" # Change to your Host cluster name
 $clusterDomain = "config.vcls.clusters.domain-c##.enabled"  # Change the the number within domain-c## to whatever your cluster number is and reference https://docs.vmware.com/en/VMware-vSphere/7.0/com.vmware.vsphere.resmgmt.doc/GUID-F98C3C93-875D-4570-852B-37A38878CE0F.html for help
 
 # Connect to vCenter with saved creds
