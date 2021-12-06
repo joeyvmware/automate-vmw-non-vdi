@@ -8,7 +8,7 @@ $cluster = "vSAN-Cluster"
 $clusterDomain = "config.vcls.clusters.domain-c##.enabled"  # Change the the number within domain-c## to whatever your cluster number is and reference https://docs.vmware.com/en/VMware-vSphere/7.0/com.vmware.vsphere.resmgmt.doc/GUID-F98C3C93-875D-4570-852B-37A38878CE0F.html for help
 
 # Connect to vCenter with saved creds
-connect-viserver -Server $vc -Credential $credential
+connect-viserver -Server $vc -Credential $credentials
 
 # Set Retreat Mode to shutdown and remove vCLS VMs on this specific cluster.
 New-AdvancedSetting -Entity $vc -name $clusterDomain -Value False -Confirm:$false -Force
