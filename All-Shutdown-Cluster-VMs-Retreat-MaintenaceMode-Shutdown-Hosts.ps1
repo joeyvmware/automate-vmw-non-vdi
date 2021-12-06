@@ -16,7 +16,7 @@ Start-Sleep -Seconds 180 # This should given enough time for vCenter to shutdown
 
 # Get list of VMs based upon this cluster that are Powered On and save to a CSV file to power back on later, for now we gracefully shutdown those VMs.
 $vmservers=get-vm -location (Get-Cluster -Name $cluster) | Where {$_.PowerState -eq "PoweredOn"} 
-$vmservers | select Name | export-csv <driveletter>:\<path>\cluster-vms.csv -NoTypeInformation  # I'm using this file to later power on back the same VMs after maintenance in another script
+$vmservers | select Name | export-csv <driveletter>:\<path>\$cluster-vms.csv -NoTypeInformation  # I'm using this file to later power on back the same VMs after maintenance in another script
 $vmservers | Shutdown-VMGuest -Confirm:$false
 
 # Shutdown any left over VMs that didn't shutdown successfully
