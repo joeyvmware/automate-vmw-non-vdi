@@ -1,3 +1,5 @@
+# https://communities.vmware.com/t5/VMware-PowerCLI-Discussions/is-it-possible-to-move-the-Zombie-file-from-specified-path-to/m-p/2954251#M110731
+# Initially created by LucD at the above link
 # Clear All Variables
 Remove-Variable * -ErrorAction SilentlyContinue
 
