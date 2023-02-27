@@ -13,10 +13,7 @@ $w1 | Write-Warning
 # $credential = Get-Credential
 # $credential | Export-Clixml -path <drive>:\<location>\powershell-local-vcenter.cred
 $credential = import-clixml -path <drive>:\<location>\powershell-local-vcenter.cred
-#
-# !!!You need to launch the RVToolsPasswordEncryption.exe to generate the key below first!!!
-#
-$credpass = "_RVTools...."
+$credpass = [PSCredential]::new(0, $credential.Password).GetNetworkCredential().Password
 $vc = "vcenter.fqdn.com"
 $RVToolsFolder = "<drive>:\<location>\<folder>"
 $file = '<drive>:\<location>\<folder>\RVTools_tabvHealth.csv'
