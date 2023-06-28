@@ -1,26 +1,44 @@
-# Clear All Variables
-Remove-Variable * -ErrorAction SilentlyContinue
+$existingVariables = Get-Variable
 
-# Save vCenter credentials - Only needs to be ran once to create .cred file.
-# $credential = Get-Credential
+try {
+    #region Starter Vars () - Generic Declarations for this example
+    # Save ESXi credentials - Only needs to be ran once to create .cred file.
+    $credPath = Read-Host -Prompt "Enter the path to save the ESXi credential file (e.g., C:\scripts\localrootpasswd.cred)"
 
-# Export cred file
-# $credential | Export-Clixml -path <DriveLetter>:\scripts\esxi_root.cred
+    # Create the directory if it doesn't exist
+    if (-not (Test-Path (Split-Path -Path $credPath))) {
+        New-Item -ItemType Directory -Path (Split-Path -Path $credPath) | Out-Null
+    }
 
-# Import cred file
-$credential = import-clixml -path <DriveLetter>:\scripts\esxi_root.cred
+    $credentials = Get-Credential
+    $credentials | Export-Clixml -Path $credPath
+    
+    # Path to saved config exports
+    $configPath = Read-Host -Prompt "Enter the path to the saved host config export file(s) (e.g., C:\backup\hosts\config)"
 
-#region Started Vars () - Generic Declarations for this example
-$vmhost = "esxhost1.fqdn.wahtever"
-$restoreConfig = "<DriveLetter>:\backup\hosts\configBundle-$($vmhost).tgz"
-#endregion
+    $vmHost = Read-Host -Prompt "Enter the FQDN of the ESXi server you want to restore (e.g., esxhost1.fqdn.whatever)"
 
-# Ignore Invalid Certificate warning
-Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -Confirm:$false
+    $restoreConfig = Join-Path -Path $configPath -ChildPath "configBundle-$vmHost.tgz"
+    #endregion
 
-# Connect to Host with saved creds
-connect-viserver -server $vmhost -Credential $credential
+    # Ignore Invalid Certificate warning
+    Set-PowerCLIConfiguration -InvalidCertificateAction Ignore -Confirm:$false | Out-Null
 
-#Restore Host Configuration
-Set-VMHost -VMHost $vmHost -State 'Maintenance'
-Set-VMHostFirmware -VMHost $vmhost -Restore -SourcePath $restoreConfig -HostUser $credential.username -HostPassword $credential.password
+    # Connect to ESXi host with saved creds
+    Connect-VIServer -Server $vmHost -Credential $credentials
+
+    # Enter maintenance mode on the ESXi host
+    $esxi = Get-VMHost -Name $vmHost
+    if ($esxi.ConnectionState -ne "Maintenance") {
+        # Place the host in maintenance mode
+        Set-VMHost -VMHost $vmHost -State 'Maintenance' -Confirm:$false
+    }
+
+    # Restore Host Configuration from backup
+    Set-VMHostFirmware -VMHost $vmHost -Restore -SourcePath $restoreConfig -HostUser $credentials.username -HostPassword $credentials.GetNetworkCredential().Password -ErrorAction SilentlyContinue
+
+    Write-Host "`nRestore task completed successfully." -ForegroundColor Green
+} finally {
+    # Remove any new variables
+    Get-Variable | Where-Object Name -NotIn $existingVariables.Name | Remove-Variable -ErrorAction SilentlyContinue
+}
